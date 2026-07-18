@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Портфоліо — gladio.ik</title>
+<meta name="description" content="Реальні проєкти: Telegram-бот автосалону з базою даних, монітор X/Twitter на Playwright, система онлайн-запису для салону.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08090E;--panel:#0E1017;--panel-2:#131722;--line:#1F2431;--line-2:#2C3344;
+  --ivory:#EDEBE5;--muted:#858C9E;--amber:#F2A93B;--green:#57D98A;--cyan:#5FC8DE;--r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--ivory);font-family:'Manrope',system-ui,sans-serif;
+  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;opacity:.22;
+  mask-image:radial-gradient(ellipse 100% 45% at 50% 0%,#000 15%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 100% 45% at 50% 0%,#000 15%,transparent 70%)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:'Unbounded',sans-serif;font-weight:500;line-height:1.14;letter-spacing:-.025em}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--amber);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:24px;height:1px;background:var(--amber);opacity:.55}
+.lead{color:var(--muted);font-size:18px;max-width:60ch}
+
+header{position:sticky;top:0;z-index:60;backdrop-filter:blur(14px);background:rgba(8,9,14,.8);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{font-family:'JetBrains Mono',monospace;font-size:15px}
+.logo b{color:var(--amber);font-weight:500}
+.nav-links{display:flex;gap:26px;font-size:14.5px;color:var(--muted)}
+.nav-links a:hover,.nav-links a.on{color:var(--ivory)}
+.nav-links a.on{color:var(--amber)}
+@media(max-width:860px){.nav-links{display:none}}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:8px;font-weight:700;
+  font-size:15px;transition:.2s ease;border:1px solid transparent;cursor:pointer;white-space:nowrap}
+.btn-primary{background:var(--amber);color:#161003}
+.btn-primary:hover{background:#ffc164;transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line-2);color:var(--ivory);background:transparent}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+.btn-sm{padding:9px 16px;font-size:14px}
+
+.top{padding:76px 0 56px;border-bottom:1px solid var(--line)}
+.top h1{font-size:clamp(32px,4.6vw,54px);margin:20px 0 18px;font-weight:700}
+.summary{display:flex;gap:44px;flex-wrap:wrap;margin-top:34px}
+.summary div span{display:block;font-family:'Unbounded',sans-serif;font-size:30px;font-weight:700;color:var(--amber);line-height:1}
+.summary div small{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);display:block;margin-top:8px}
+
+/* case */
+.case{padding:74px 0;border-bottom:1px solid var(--line)}
+.case-grid{display:grid;grid-template-columns:250px 1fr;gap:52px;align-items:start}
+.meta{position:sticky;top:96px}
+.meta .idx{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);letter-spacing:.14em}
+.meta dl{margin-top:24px}
+.meta dt{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:#606880;margin-top:18px}
+.meta dd{font-size:14.5px;color:var(--ivory);margin-top:5px}
+.case h2{font-size:clamp(24px,3.1vw,34px);font-weight:700;margin-bottom:14px}
+.case .prob{color:var(--muted);font-size:17px;margin-bottom:28px;max-width:62ch}
+.block{margin-bottom:26px}
+.block h3{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--amber);font-weight:500;margin-bottom:14px}
+.feat{list-style:none;display:grid;gap:9px}
+.feat li{position:relative;padding-left:22px;color:#C3C8D6;font-size:15.5px;line-height:1.55}
+.feat li::before{content:"▸";position:absolute;left:0;color:var(--amber);opacity:.75}
+.feat li b{color:var(--ivory);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--line);
+  background:var(--panel);border-radius:5px;padding:5px 11px}
+.snippet{background:#060709;border:1px solid var(--line);border-radius:10px;padding:18px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:12.8px;line-height:1.95;color:#9AA2B5;overflow-x:auto;white-space:pre}
+.snippet .c{color:#565E75}
+.snippet .kw{color:var(--cyan)}
+.snippet .st{color:var(--green)}
+.result{border-left:2px solid var(--amber);padding:2px 0 2px 18px;margin-top:26px;color:var(--ivory);font-size:16px}
+
+/* принципи */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.pc{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px}
+.pc h3{font-size:17px;font-weight:500;margin-bottom:10px}
+.pc p{color:var(--muted);font-size:15px;line-height:1.6}
+
+.cta{padding:80px 0;text-align:center}
+.cta h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin-bottom:16px}
+.cta p{color:var(--muted);max-width:52ch;margin:0 auto 30px}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.rv{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .case-grid{grid-template-columns:1fr;gap:26px}
+  .meta{position:static}
+  .meta dl{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+  .grid3{grid-template-columns:1fr}
+  .case{padding:54px 0}
+  .summary{gap:28px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="logo">gladio<b>.ik</b></a>
+    <nav class="nav-links">
+      <a href="index.html#services">Що роблю</a>
+      <a href="index.html#calc">Скільки економить</a>
+      <a href="portfolio.html" class="on">Портфоліо</a>
+      <a href="index.html#brief">Бриф</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://t.me/ponponobi" target="_blank" rel="noopener">Написати</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="top">
+    <span class="eyebrow">Портфоліо</span>
+    <h1>Три системи, які працюють замість людини</h1>
+    <p class="lead">Нижче — розбір реальних проєктів: яка була задача, що конкретно побудовано і як воно тримається в роботі. Код кожного проєкту писався під передачу замовнику, а не «щоб запрацювало».</p>
+    <div class="summary">
+      <div><span>3</span><small>робочі системи</small></div>
+      <div><span>~2 900</span><small>рядків коду</small></div>
+      <div><span>24/7</span><small>режим роботи</small></div>
+      <div><span>Python</span><small>основний стек</small></div>
+    </div>
+  </section>
+
+  <!-- CASE 1 -->
+  <article class="case rv" id="autobot">
+    <div class="case-grid">
+      <aside class="meta">
+        <span class="idx">ПРОЄКТ 01</span>
+        <dl>
+          <dt>Тип</dt><dd>Telegram-бот + база даних</dd>
+          <dt>Сфера</dt><dd>Продаж авто зі США</dd>
+          <dt>Обсяг</dt><dd>~1 050 рядків, 2 модулі</dd>
+          <dt>Роль</dt><dd>Повний цикл: архітектура, код, запуск</dd>
+        </dl>
+      </aside>
+      <div>
+        <h2>Каталог авто з адмінкою всередині Telegram</h2>
+        <p class="prob">Оголошення жили в переписці й нотатках: фото окремо, характеристики окремо, актуальність невідома. Клієнт питав «а що є до 20 тисяч?» — і продавець гортав чат руками.</p>
+
+        <div class="block">
+          <h3>Що побудовано</h3>
+          <ul class="feat">
+            <li><b>Картка авто з 13 полів:</b> марка, модель, рік, двигун, КПП, привід, пробіг, ціна, телефон, VIN, локація, опис і кілька фото в галереї</li>
+            <li><b>Пошук для покупця</b> — за маркою, роком, ціною та комбінований; неактивні оголошення не показуються</li>
+            <li><b>Адмін-панель у тому ж боті:</b> додати авто покроково, відредагувати будь-яке поле, зняти з продажу одним натисканням, видалити разом із фото</li>
+            <li><b>Своя база SQLite</b> з двома таблицями та зв'язком фото → авто (каскадне видалення, без «сиріт» у базі)</li>
+            <li><b>Міграція схеми на льоту</b> — нові поля дописуються в наявну базу без втрати вже доданих авто</li>
+            <li><b>Окремий переглядач бази</b> для власника: одна команда — і видно весь стан бази в консолі</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Технічні рішення, які тут важливі</h3>
+          <ul class="feat">
+            <li>Оновлення полів іде через білий список дозволених колонок — назва поля ніколи не потрапляє в SQL напряму</li>
+            <li>Усі налаштування в <span style="font-family:'JetBrains Mono',monospace;font-size:14px">.env</span>: токен, ID адміна, шлях до бази, валюта. Файл створюється автоматично при першому запуску з підказками</li>
+            <li>Робота з базою через контекстний менеджер — з'єднання закривається навіть при помилці</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Фрагмент коду</h3>
+          <div class="snippet"><span class="c"># оновлення поля лише з дозволеного списку — захист від ін'єкцій</span>
+<span class="kw">def</span> update_field(car_id, field, value):
+    allowed = {<span class="st">"brand"</span>, <span class="st">"model"</span>, <span class="st">"year"</span>, <span class="st">"price"</span>, <span class="st">"mileage"</span>, ...}
+    <span class="kw">if</span> field <span class="kw">not in</span> allowed:
+        <span class="kw">raise</span> ValueError(f<span class="st">"Заборонене поле: {field}"</span>)</div>
+        </div>
+
+        <div class="block"><h3>Стек</h3>
+          <div class="chips"><span class="chip">Python</span><span class="chip">python-telegram-bot 21</span><span class="chip">SQLite</span><span class="chip">dotenv</span><span class="chip">asyncio</span></div>
+        </div>
+
+        <p class="result">Продавець додає авто за хвилину з телефона, покупець сам фільтрує каталог. Оголошення більше не губляться — усе в одній базі з історією.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CASE 2 -->
+  <article class="case rv" id="xmonitor">
+    <div class="case-grid">
+      <aside class="meta">
+        <span class="idx">ПРОЄКТ 02</span>
+        <dl>
+          <dt>Тип</dt><dd>Скрейпер + моніторинг у реальному часі</dd>
+          <dt>Сфера</dt><dd>Крипторинок, сигнали</dd>
+          <dt>Обсяг</dt><dd>~840 рядків</dd>
+          <dt>Роль</dt><dd>Повний цикл</dd>
+        </dl>
+      </aside>
+      <div>
+        <h2>Монітор X (Twitter) з розпізнаванням адрес контрактів</h2>
+        <p class="prob">У ніші, де рішення ухвалюють за хвилини, людина фізично не може сидіти й оновлювати стрічку десятка акаунтів. Пост, помічений через півгодини, вже нічого не вартий.</p>
+
+        <div class="block">
+          <h3>Що побудовано</h3>
+          <ul class="feat">
+            <li><b>Сканування кожні 30 секунд</b> — новий пост відстежуваного акаунта прилітає в Telegram майже миттєво</li>
+            <li><b>Автоматичний пошук адрес контрактів</b> у тексті: Solana (base58 з перевіркою довжини ключа) та EVM-мережі (0x + 40 hex) — Ethereum, BSC, Polygon, Arbitrum</li>
+            <li><b>Фільтри по типу активності:</b> твіти, цитати, ретвіти, відповіді, контракти — вмикаються окремо для кожного акаунта</li>
+            <li><b>Керування зі смартфона</b> — додати чи прибрати акаунт, перемкнути фільтр можна інлайн-кнопками в Telegram, без доступу до сервера</li>
+            <li><b>Захист від дублів:</b> ID кожного обробленого поста зберігається, повторних сповіщень не буває</li>
+            <li><b>Авторизована сесія</b> через збережені cookies — видно й ті пости, що недоступні гостям</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Складне місце проєкту</h3>
+          <ul class="feat">
+            <li>X віддає стрічку через внутрішні запити, а не готовим HTML. Скрейпер запускає справжній Chromium і перехоплює мережеві відповіді сторінки — тому не ламається від зміни верстки</li>
+            <li>Асинхронна архітектура: цикл сканування й Telegram-бот працюють паралельно в одному процесі, не блокуючи один одного</li>
+            <li>Валідація адрес перед відправкою — щоб у сповіщення не летіли випадкові рядки, схожі на base58</li>
+          </ul>
+        </div>
+
+        <div class="block"><h3>Стек</h3>
+          <div class="chips"><span class="chip">Python</span><span class="chip">Playwright</span><span class="chip">Chromium</span><span class="chip">asyncio</span><span class="chip">base58</span><span class="chip">Telegram Bot API</span></div>
+        </div>
+
+        <p class="result">Замість ручного моніторингу — сповіщення за секунди після публікації, з уже виділеною адресою контракту.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CASE 3 -->
+  <article class="case rv" id="booking">
+    <div class="case-grid">
+      <aside class="meta">
+        <span class="idx">ПРОЄКТ 03</span>
+        <dl>
+          <dt>Тип</dt><dd>Система онлайн-запису</dd>
+          <dt>Сфера</dt><dd>Б'юті-послуги</dd>
+          <dt>Обсяг</dt><dd>~1 030 рядків</dd>
+          <dt>Роль</dt><dd>Повний цикл</dd>
+        </dl>
+      </aside>
+      <div>
+        <h2>Запис клієнтів без жодного повідомлення майстру</h2>
+        <p class="prob">Майстер узгоджував кожен запис у переписці під час роботи: «а на четвер є вікно?» — треба відкласти інструмент, подивитись зошит, відповісти. Накладки й забуті записи були питанням часу.</p>
+
+        <div class="block">
+          <h3>Що побудовано</h3>
+          <ul class="feat">
+            <li><b>Запис у чотири кроки:</b> послуга → день → вільний час → ім'я і телефон. Клієнт нікого не чекає</li>
+            <li><b>Розрахунок вільних слотів за тривалістю послуги</b> — манікюр 60 хв, педикюр 90, комбо 150. Система показує лише той час, куди послуга реально влазить до кінця робочого дня</li>
+            <li><b>Захист від накладок</b> — зайнятий інтервал зникає зі списку одразу, двоє клієнтів не сядуть на одну годину</li>
+            <li><b>Панель майстра:</b> відкрити робочі дні й години, редагувати список послуг та їх тривалість, бачити всі записи, скасувати будь-який</li>
+            <li><b>Сповіщення про кожен новий запис</b> приходить майстру в Telegram миттєво</li>
+            <li><b>Клієнт бачить і скасовує свої записи</b> сам — без дзвінків і незручних повідомлень</li>
+            <li><b>Київський часовий пояс</b> з коректним фолбеком, якщо на сервері немає бази часових зон</li>
+          </ul>
+        </div>
+
+        <div class="block"><h3>Стек</h3>
+          <div class="chips"><span class="chip">Python</span><span class="chip">python-telegram-bot 22</span><span class="chip">ConversationHandler</span><span class="chip">JSON-сховище</span><span class="chip">zoneinfo</span></div>
+        </div>
+
+        <p class="result">Записи ведуться самі, майстер не відволікається під час роботи, а клієнт бачить реальні вільні вікна замість переписки.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- принципи -->
+  <section class="case rv" style="border-bottom:none">
+    <span class="eyebrow">Як я пишу код</span>
+    <h2 style="font-size:clamp(24px,3.1vw,34px);font-weight:700;margin:16px 0 12px">Проєкт має пережити передачу замовнику</h2>
+    <p class="lead">Ці правила однакові в усіх трьох проєктах вище — їх видно прямо в коді.</p>
+    <div class="grid3">
+      <div class="pc">
+        <h3>Ключі не живуть у коді</h3>
+        <p>Токени, ID та шляхи — у файлі налаштувань поза репозиторієм. Проєкт можна показувати й передавати, не розкриваючи доступів.</p>
+      </div>
+      <div class="pc">
+        <h3>Оновлення не ламає дані</h3>
+        <p>Схема бази мігрує сама: нові поля дописуються в робочу базу, вже накопичена інформація лишається на місці.</p>
+      </div>
+      <div class="pc">
+        <h3>Запуск з нуля за три команди</h3>
+        <p>Список залежностей, автостворення конфіга з підказками, інструкція в шапці файлу. Проєкт підніме будь-який розробник.</p>
+      </div>
+      <div class="pc">
+        <h3>Помилка не зупиняє систему</h3>
+        <p>Таймаути й збої обробляються з повторною спробою, з'єднання з базою закривається навіть при виключенні.</p>
+      </div>
+      <div class="pc">
+        <h3>Дані перевіряються</h3>
+        <p>Введення користувача й знайдені в тексті адреси валідуються перед записом чи відправкою — сміття не потрапляє далі.</p>
+      </div>
+      <div class="pc">
+        <h3>Керування без консолі</h3>
+        <p>Власник керує системою з телефона через звичайні кнопки. Щоб змінити налаштування, не потрібен розробник.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta rv">
+    <h2>Опишіть свою рутину — скажу, чи автоматизується</h2>
+    <p>Розбір задачі й оцінка безкоштовні. Якщо автоматизація не окупиться, скажу прямо.</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="https://t.me/ponponobi" target="_blank" rel="noopener">Написати в Telegram</a>
+      <a class="btn btn-ghost" href="index.html#calc">Порахувати економію</a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>© <span id="yr"></span> gladio.ik — автоматизація, AI-агенти, парсери</span>
+  <span style="font-family:'JetBrains Mono',monospace;font-size:13px">Telegram: @ponponobi · Instagram: @gladio.ik</span>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.06});
+document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>
