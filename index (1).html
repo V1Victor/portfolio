@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gladio.ik — AI-агенти, парсери та автоматизація</title>
+<meta name="description" content="Будую AI-агентів, парсери, інтеграції API та скрипти, які виконують рутинну роботу замість людей. Пишіть у Telegram.">
+<meta property="og:title" content="gladio.ik — AI-агенти, парсери та автоматизація">
+<meta property="og:description" content="Рутина, яка з'їдає години команди, стає скриптом, що працює цілодобово.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08090E;
+  --panel:#0E1017;
+  --panel-2:#131722;
+  --line:#1F2431;
+  --line-2:#2C3344;
+  --ivory:#EDEBE5;
+  --muted:#858C9E;
+  --amber:#F2A93B;
+  --green:#57D98A;
+  --cyan:#5FC8DE;
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);color:var(--ivory);
+  font-family:'Manrope',system-ui,sans-serif;font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;opacity:.22;
+  mask-image:radial-gradient(ellipse 100% 55% at 50% 0%,#000 15%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 100% 55% at 50% 0%,#000 15%,transparent 70%);
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:'Unbounded',sans-serif;font-weight:500;line-height:1.14;letter-spacing:-.025em}
+.mono{font-family:'JetBrains Mono',monospace}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--amber);display:inline-flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:24px;height:1px;background:var(--amber);opacity:.55}
+.lead{color:var(--muted);font-size:18px;max-width:58ch}
+
+header{position:sticky;top:0;z-index:60;backdrop-filter:blur(14px);background:rgba(8,9,14,.8);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{font-family:'JetBrains Mono',monospace;font-size:15px}
+.logo b{color:var(--amber);font-weight:500}
+.nav-links{display:flex;gap:26px;font-size:14.5px;color:var(--muted)}
+.nav-links a:hover{color:var(--ivory)}
+@media(max-width:820px){.nav-links{display:none}}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:8px;
+  font-weight:700;font-size:15px;transition:.2s ease;border:1px solid transparent;cursor:pointer;white-space:nowrap}
+.btn-primary{background:var(--amber);color:#161003}
+.btn-primary:hover{background:#ffc164;transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line-2);color:var(--ivory);background:transparent}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+.btn-sm{padding:9px 16px;font-size:14px}
+
+/* HERO */
+.hero{padding:92px 0 88px;display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+.hero h1{font-size:clamp(34px,4.9vw,58px);margin:22px 0 20px;font-weight:700}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero-cta{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.status{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:12.5px;
+  color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:6px 13px;background:var(--panel)}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(87,217,138,.6);animation:p 2.4s infinite}
+@keyframes p{70%{box-shadow:0 0 0 9px rgba(87,217,138,0)}100%{box-shadow:0 0 0 0 rgba(87,217,138,0)}}
+
+/* log panel */
+.term{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 34px 80px -34px rgba(0,0,0,.95)}
+.term-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.term-bar .t{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+.term-bar .live{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+  color:var(--green);display:flex;align-items:center;gap:6px}
+.log{padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:12.7px;line-height:2.05;
+  height:298px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:slide .35s ease}
+@keyframes slide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.log .ts{color:#4C5468}
+.log .ok{color:var(--green)}
+.log .inf{color:var(--cyan)}
+.log .wrn{color:var(--amber)}
+.log .msg{color:#AEB5C6}
+
+section{padding:92px 0;position:relative}
+.sec-head{max-width:64ch;margin-bottom:46px}
+.sec-head h2{font-size:clamp(27px,3.5vw,40px);margin:16px 0 16px;font-weight:700}
+
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+
+/* services */
+.svc{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;transition:.22s;position:relative}
+.svc:hover{border-color:var(--line-2);transform:translateY(-3px)}
+.svc .num{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--amber);letter-spacing:.14em}
+.svc h3{font-size:18px;margin:14px 0 10px;font-weight:500}
+.svc p{color:var(--muted);font-size:15px;line-height:1.6}
+.svc ul{list-style:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.svc li{font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.svc li{color:#6E7488;padding:3px 0}
+.svc li::before{content:"› ";color:var(--amber)}
+
+/* compare table */
+.cmp{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--panel)}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.cmp-row:last-child{border-bottom:none}
+.cmp-cell{padding:20px 24px}
+.cmp-cell:first-child{border-right:1px solid var(--line);color:var(--muted)}
+.cmp-head{background:var(--panel-2);font-family:'JetBrains Mono',monospace;font-size:11.5px;
+  letter-spacing:.15em;text-transform:uppercase}
+.cmp-head .cmp-cell:first-child{color:#666D80}
+.cmp-head .cmp-cell:last-child{color:var(--amber)}
+.cmp-cell strong{font-weight:700}
+
+/* calculator */
+.calc{background:linear-gradient(165deg,#111520,#0A0C13);border:1px solid var(--line-2);border-radius:18px;
+  padding:36px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.calc label{display:block;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.calc .field{margin-bottom:26px}
+.calc output{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--amber);float:right}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:var(--line-2);border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;
+  background:var(--amber);cursor:pointer;border:3px solid var(--ink)}
+input[type=range]::-moz-range-thumb{width:19px;height:19px;border-radius:50%;background:var(--amber);
+  cursor:pointer;border:3px solid var(--ink)}
+.result{border-left:1px solid var(--line);padding-left:36px;display:flex;flex-direction:column;justify-content:center}
+.result .big{font-family:'Unbounded',sans-serif;font-size:clamp(32px,4.4vw,50px);font-weight:700;color:var(--amber);line-height:1.05}
+.result .sub{color:var(--muted);font-size:14.5px;margin-top:6px}
+.result hr{border:none;border-top:1px solid var(--line);margin:24px 0}
+.result .small{font-family:'JetBrains Mono',monospace;font-size:13px;color:#9AA1B3;line-height:1.9}
+.result .small b{color:var(--ivory);font-weight:500}
+.disclaimer{font-size:13px;color:#5F6779;margin-top:18px;line-height:1.5}
+
+/* process */
+.step{display:grid;grid-template-columns:80px 1fr;gap:24px;padding:26px 0;border-top:1px solid var(--line)}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step-n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);padding-top:5px;letter-spacing:.1em}
+.step h3{font-size:19px;margin-bottom:8px;font-weight:500}
+.step p{color:var(--muted);font-size:15.5px}
+.step .dur{font-family:'JetBrains Mono',monospace;font-size:12px;color:#666D80;display:block;margin-top:8px}
+
+/* cases */
+.case{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;transition:.22s}
+.case{display:block}
+.case:hover{border-color:var(--amber);transform:translateY(-3px)}
+.case .kpi{font-family:'Unbounded',sans-serif;font-size:30px;font-weight:700;color:var(--green);line-height:1}
+.case .kpi-l{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);letter-spacing:.1em;
+  text-transform:uppercase;margin-top:8px;display:block}
+.case h3{font-size:17px;margin:20px 0 8px;font-weight:500}
+.case p{color:var(--muted);font-size:14.5px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:3px 9px}
+
+/* stack */
+.stackgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:18px}
+.stackgrid h4{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:12px;font-weight:500}
+.stackgrid p{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:2}
+
+/* brief */
+.brief{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:34px}
+.brief-row{margin-bottom:24px}
+.brief-row .q{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:11px;display:block}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{font-size:15px;font-family:'Manrope',sans-serif;font-weight:500;cursor:pointer;border:1px solid var(--line);
+  background:var(--panel-2);color:var(--ivory);border-radius:7px;padding:10px 16px;transition:.16s}
+.opt:hover{border-color:var(--line-2)}
+.opt[aria-pressed="true"]{background:var(--amber);color:#161003;border-color:var(--amber);font-weight:700}
+.preview{background:#060709;border:1px solid var(--line);border-radius:9px;padding:18px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:13.3px;color:#B3BACC;line-height:1.85;white-space:pre-wrap;min-height:104px}
+.brief-actions{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.copied{font-size:14px;color:var(--green);opacity:0;transition:.2s}
+.copied.on{opacity:1}
+
+.contacts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:16px}
+.contact{display:flex;align-items:center;gap:15px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r);padding:20px 22px;transition:.2s}
+.contact:hover{border-color:var(--amber);transform:translateY(-2px)}
+.contact .ic{width:40px;height:40px;border-radius:9px;background:var(--panel-2);border:1px solid var(--line);
+  display:grid;place-items:center;flex-shrink:0}
+.contact small{display:block;color:var(--muted);font-size:12px;font-family:'JetBrains Mono',monospace;
+  letter-spacing:.09em;text-transform:uppercase}
+.contact strong{font-size:16px;font-weight:700}
+
+footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+.tolink{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  margin-top:18px;padding:26px 30px;border-radius:var(--r);
+  background:linear-gradient(100deg,#151A27,#0D1017);
+  border:1px solid var(--line-2);transition:.22s ease;
+}
+.tolink:hover{border-color:var(--amber);transform:translateY(-2px)}
+.tolink h3{font-size:19px;font-weight:500;margin-bottom:5px}
+.tolink p{color:var(--muted);font-size:15px}
+.tolink .go{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--amber);
+  display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+.tolink:hover .go .arr{transform:translateX(5px)}
+.tolink .arr{transition:.22s}
+.nav-links a.hi{color:var(--amber)}
+.rv{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:980px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .calc{grid-template-columns:1fr;gap:28px;padding:26px 22px}
+  .result{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:26px}
+  .stackgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;padding:60px 0 68px;gap:38px}
+  .g4,.g3,.contacts,.stackgrid{grid-template-columns:1fr}
+  section{padding:66px 0}
+  .cmp-row{grid-template-columns:1fr}
+  .cmp-cell:first-child{border-right:none;border-bottom:1px solid var(--line)}
+  .step{grid-template-columns:1fr;gap:6px}
+  .log{height:250px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="logo">gladio<b>.ik</b></a>
+    <nav class="nav-links">
+      <a href="#services">Що роблю</a>
+      <a href="#calc">Скільки економить</a>
+      <a href="#process">Процес</a>
+      <a href="portfolio.html" class="hi">Портфоліо</a>
+      <a href="#brief">Бриф</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://t.me/ponponobi" target="_blank" rel="noopener">Написати</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <span class="status"><i class="pulse"></i> Вільний для 2 проєктів</span>
+      <h1>Рутина, яку ваша команда робить руками, може <em>працювати сама</em>.</h1>
+      <p class="lead">Будую AI-агентів, парсери й інтеграції API: збір даних, обробка заявок, звіти, моніторинг цін і конкурентів. Скрипт не хворіє, не забуває й не просить відпустки.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://t.me/ponponobi" target="_blank" rel="noopener">Описати задачу →</a>
+        <a class="btn btn-ghost" href="portfolio.html">Дивитись роботи</a>
+      </div>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">
+        <i style="width:9px;height:9px;border-radius:50%;background:#2A3042"></i>
+        <span class="t">agent.run — production</span>
+        <span class="live"><i class="pulse"></i>LIVE</span>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="sec-head rv">
+      <span class="eyebrow">Напрямки</span>
+      <h2>Чотири типи задач, які я закриваю</h2>
+      <p class="lead">Якщо задачу можна описати словами «щодня хтось заходить, копіює й перевіряє» — її можна автоматизувати.</p>
+    </div>
+    <div class="grid g4">
+      <div class="svc rv">
+        <span class="num">AI-АГЕНТИ</span>
+        <h3>Агенти на LLM</h3>
+        <p>Асистенти, які самі читають дані, ухвалюють рішення й виконують дії у ваших сервісах.</p>
+        <ul><li>обробка звернень</li><li>класифікація й тегування</li><li>вилучення даних з тексту</li><li>чат-боти зі знанням бази</li></ul>
+      </div>
+      <div class="svc rv">
+        <span class="num">ПАРСЕРИ</span>
+        <h3>Збір даних</h3>
+        <p>Витягую дані з сайтів, маркетплейсів і документів у зручний формат — регулярно й за розкладом.</p>
+        <ul><li>ціни та наявність</li><li>каталоги й товари</li><li>обхід динамічних сторінок</li><li>вигрузка в Sheets / БД</li></ul>
+      </div>
+      <div class="svc rv">
+        <span class="num">API</span>
+        <h3>Інтеграції</h3>
+        <p>З'єдную сервіси між собою, щоб дані не переносили руками з вкладки у вкладку.</p>
+        <ul><li>CRM ↔ сайт ↔ склад</li><li>платіжні та поштові API</li><li>Telegram-сповіщення</li><li>власні API на FastAPI</li></ul>
+      </div>
+      <div class="svc rv">
+        <span class="num">СКРИПТИ</span>
+        <h3>Автоматизація рутини</h3>
+        <p>Невеликі інструменти, які економлять години: звіти, розсилки, обробка файлів, моніторинг.</p>
+        <ul><li>звіти за розкладом</li><li>обробка Excel / CSV</li><li>моніторинг і алерти</li><li>Telegram-боти</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head rv">
+      <span class="eyebrow">Різниця</span>
+      <h2>Як виглядає процес до і після</h2>
+    </div>
+    <div class="cmp rv">
+      <div class="cmp-row cmp-head">
+        <div class="cmp-cell">Руками</div>
+        <div class="cmp-cell">Автоматизовано</div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell">Менеджер збирає ціни конкурентів по вкладках, кілька годин на тиждень</div>
+        <div class="cmp-cell"><strong>Таблиця оновлюється щоранку о 8:00</strong>, зміни підсвічені, різкі стрибки приходять у Telegram</div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell">Заявки з пошти й форм переносять у CRM вручну, частина губиться</div>
+        <div class="cmp-cell"><strong>Заявка потрапляє в CRM за секунди</strong>, з тегом джерела й відповідальним</div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell">Звіт за місяць збирають два дні з п'яти різних джерел</div>
+        <div class="cmp-cell"><strong>Готовий файл першого числа</strong>, без участі людини</div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell">Однотипні листи й запити читає і сортує людина</div>
+        <div class="cmp-cell"><strong>Агент класифікує й готує чернетку відповіді</strong>, людина лише підтверджує</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="calc">
+    <div class="sec-head rv">
+      <span class="eyebrow">Рахунок</span>
+      <h2>Скільки вам коштує рутина зараз</h2>
+      <p class="lead">Пересуньте повзунки під свою ситуацію. Це не комерційна пропозиція — це порядок цифр, з яким варто починати розмову.</p>
+    </div>
+
+    <div class="calc rv">
+      <div>
+        <div class="field">
+          <label for="h">Годин на рутину щотижня <output id="hv">10 год</output></label>
+          <input type="range" id="h" min="1" max="60" value="10">
+        </div>
+        <div class="field">
+          <label for="p">Скільки коштує година роботи <output id="pv">300 ₴</output></label>
+          <input type="range" id="p" min="100" max="1500" step="50" value="300">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label for="a">Яку частку реально автоматизувати <output id="av">80%</output></label>
+          <input type="range" id="a" min="30" max="95" step="5" value="80">
+        </div>
+      </div>
+      <div class="result">
+        <div class="big" id="money">374 400 ₴</div>
+        <div class="sub">економія за рік</div>
+        <hr>
+        <div class="small">
+          Звільнених годин на рік: <b id="hours">416</b><br>
+          Це приблизно <b id="days">52</b> робочих днів<br>
+          Робота йде <b>24/7</b>, без вихідних і людських помилок
+        </div>
+        <p class="disclaimer">Розрахунок орієнтовний: 52 тижні на рік, робочий день 8 годин. Точну оцінку дам після опису задачі.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head rv">
+      <span class="eyebrow">Чому зі мною</span>
+      <h2>Автоматизація має сенс лише тоді, коли працює без вас</h2>
+      <p class="lead">Головний ризик у таких проєктах — скрипт, який зламався через тиждень і нікому це не сказав. Ось як я його знімаю.</p>
+    </div>
+    <div class="grid g3">
+      <div class="svc rv">
+        <h3>Скрипт сам повідомляє про збій</h3>
+        <p>Логи, обробка помилок і сповіщення в Telegram. Ви дізнаєтесь про проблему від системи, а не від клієнта через тиждень.</p>
+      </div>
+      <div class="svc rv">
+        <h3>Оцінка до початку роботи</h3>
+        <p>Спершу перевіряю, чи задача взагалі технічно вирішувана й вигідна. Якщо автоматизація не окупиться — скажу прямо, а не візьму гроші.</p>
+      </div>
+      <div class="svc rv">
+        <h3>Код і доступи ваші</h3>
+        <p>Репозиторій, сервер, ключі API — на ваших акаунтах. Передаю з інструкцією, щоб проєкт міг підхопити будь-який розробник.</p>
+      </div>
+      <div class="svc rv">
+        <h3>Витрати на API прозорі</h3>
+        <p>Рахую вартість токенів і запитів наперед, підбираю модель під бюджет. Ви знаєте місячну суму до запуску, а не після рахунку.</p>
+      </div>
+      <div class="svc rv">
+        <h3>Працює з вашими даними</h3>
+        <p>Підлаштовуюсь під ваші формати: Sheets, Excel, CRM, база даних. Не змушую міняти процеси заради інструмента.</p>
+      </div>
+      <div class="svc rv">
+        <h3>Відповідаю в межах години</h3>
+        <p>Проміжні демо на кожному етапі. Ви бачите роботу в дії ще до фінальної здачі, а не приймаєте кота в мішку.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="sec-head rv">
+      <span class="eyebrow">Процес</span>
+      <h2>Від задачі до працюючого скрипта</h2>
+    </div>
+    <div class="rv">
+      <div class="step">
+        <div class="step-n">01</div>
+        <div>
+          <h3>Розбір задачі</h3>
+          <p>Ви показуєте, як робите це руками зараз. Я кажу, що автоматизується повністю, що частково, а що взагалі не варто чіпати. На виході — план, ціна, строк.</p>
+          <span class="dur">1–2 дні · безкоштовно</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <div>
+          <h3>Прототип на реальних даних</h3>
+          <p>Роблю робочу версію на невеликому обсязі ваших даних. Ви бачите фактичний результат до того, як вкладати повний бюджет.</p>
+          <span class="dur">2–4 дні</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <div>
+          <h3>Розробка й тестування</h3>
+          <p>Повна логіка, обробка помилок, ліміти запитів, повторні спроби. Ганяю на бойових даних, поки результат не збігається з очікуваним.</p>
+          <span class="dur">від 5 днів</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">04</div>
+        <div>
+          <h3>Запуск і супровід</h3>
+          <p>Розгортаю на сервері, ставлю розклад і моніторинг, передаю доступи та інструкцію. Далі — гарантійні правки й підтримка за потреби.</p>
+          <span class="dur">1–2 дні + 14 днів гарантії</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cases">
+    <div class="sec-head rv">
+      <span class="eyebrow">Кейси</span>
+      <h2>Що вже працює</h2>
+      <p class="lead">Три системи в бойовому режимі. Повний розбір кожної — <a href="portfolio.html" style="color:var(--amber);border-bottom:1px solid rgba(242,169,59,.4)">у портфоліо</a>.</p>
+    </div>
+    <div class="grid g3">
+      <a class="case rv" href="portfolio.html#autobot">
+        <div class="kpi">13</div>
+        <span class="kpi-l">полів у картці авто</span>
+        <h3>Каталог авто в Telegram</h3>
+        <p>Своя база даних, галерея фото, пошук за маркою й ціною, повна адмінка всередині бота.</p>
+        <div class="chips"><span class="chip">Python</span><span class="chip">SQLite</span><span class="chip">Bot API</span></div>
+      </a>
+      <a class="case rv" href="portfolio.html#xmonitor">
+        <div class="kpi">30с</div>
+        <span class="kpi-l">затримка сповіщення</span>
+        <h3>Монітор X з детектом контрактів</h3>
+        <p>Перехоплює нові пости через Chromium, знаходить адреси SOL та EVM у тексті, шле в Telegram.</p>
+        <div class="chips"><span class="chip">Playwright</span><span class="chip">asyncio</span><span class="chip">base58</span></div>
+      </a>
+      <a class="case rv" href="portfolio.html#booking">
+        <div class="kpi">0</div>
+        <span class="kpi-l">повідомлень майстру</span>
+        <h3>Онлайн-запис для салону</h3>
+        <p>Рахує вільні слоти за тривалістю послуги, не допускає накладок, сповіщає власника про запис.</p>
+        <div class="chips"><span class="chip">Python</span><span class="chip">Conversation</span><span class="chip">zoneinfo</span></div>
+      </a>
+    </div>
+
+    <a class="tolink rv" href="portfolio.html">
+      <div>
+        <h3>Повне портфоліо — з розбором кожного проєкту</h3>
+        <p>Яка була задача, що конкретно побудовано, які технічні рішення й чому саме такі.</p>
+      </div>
+      <span class="go">Відкрити портфоліо <span class="arr">→</span></span>
+    </a>
+
+    <div class="rv" style="margin-top:54px">
+      <span class="eyebrow">Стек</span>
+      <div class="stackgrid">
+        <div>
+          <h4>Мова та бекенд</h4>
+          <p>Python · FastAPI · Node.js<br>PostgreSQL · SQLite · Redis</p>
+        </div>
+        <div>
+          <h4>Дані та агенти</h4>
+          <p>Playwright · Selenium · Scrapy<br>BeautifulSoup · LLM API · RAG</p>
+        </div>
+        <div>
+          <h4>Інтеграції та запуск</h4>
+          <p>Telegram Bot API · Google Sheets<br>Docker · cron · VPS · GitHub</p>
+        </div>
+      </div>
+      <p style="color:#5F6779;font-size:13.5px;margin-top:16px">Прибери зі списку те, чим не працюєш — чесний короткий стек викликає більше довіри, ніж довгий.</p>
+    </div>
+  </section>
+
+  <section id="brief">
+    <div class="sec-head rv">
+      <span class="eyebrow">Швидкий старт</span>
+      <h2>Зберіть бриф за 15 секунд</h2>
+      <p class="lead">Оберіть варіанти — складу повідомлення. Копіюєте, надсилаєте в Telegram, отримуєте оцінку.</p>
+    </div>
+
+    <div class="brief rv">
+      <div class="brief-row" data-group="Задача">
+        <span class="q">Що потрібно</span>
+        <div class="opts">
+          <button class="opt" aria-pressed="false">AI-агент</button>
+          <button class="opt" aria-pressed="false">Парсер / збір даних</button>
+          <button class="opt" aria-pressed="false">Інтеграція API</button>
+          <button class="opt" aria-pressed="false">Telegram-бот</button>
+          <button class="opt" aria-pressed="false">Скрипт для рутини</button>
+          <button class="opt" aria-pressed="false">Ще не знаю точно</button>
+        </div>
+      </div>
+      <div class="brief-row" data-group="Обсяг">
+        <span class="q">Масштаб</span>
+        <div class="opts">
+          <button class="opt" aria-pressed="false">Разова задача</button>
+          <button class="opt" aria-pressed="false">Працює за розкладом</button>
+          <button class="opt" aria-pressed="false">Постійний сервіс</button>
+        </div>
+      </div>
+      <div class="brief-row" data-group="Строк">
+        <span class="q">Коли треба</span>
+        <div class="opts">
+          <button class="opt" aria-pressed="false">Терміново</button>
+          <button class="opt" aria-pressed="false">До 2 тижнів</button>
+          <button class="opt" aria-pressed="false">Місяць</button>
+          <button class="opt" aria-pressed="false">Гнучко</button>
+        </div>
+      </div>
+
+      <span class="q">Повідомлення</span>
+      <div class="preview" id="preview">Оберіть варіанти вище — тут з'явиться готовий текст.</div>
+
+      <div class="brief-actions">
+        <button class="btn btn-primary" id="send">Скопіювати і відкрити Telegram</button>
+        <a class="btn btn-ghost" href="https://t.me/ponponobi" target="_blank" rel="noopener">Просто написати</a>
+        <span class="copied" id="copied">Скопійовано ✓</span>
+      </div>
+    </div>
+
+    <div class="contacts rv">
+      <a class="contact" href="https://t.me/ponponobi" target="_blank" rel="noopener">
+        <span class="ic">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="#F2A93B"><path d="M9.8 15.6l-.4 4.5c.5 0 .8-.2 1.1-.5l2.6-2.5 5.4 3.9c1 .5 1.7.3 2-.9l3.5-16.4c.3-1.4-.5-2-1.5-1.6L1.2 9.6C-.2 10.1-.2 11 .9 11.3l5.4 1.7L18.9 5c.6-.4 1.1-.2.7.2L9.8 15.6z"/></svg>
+        </span>
+        <span><small>Telegram — найшвидше</small><strong>@ponponobi</strong></span>
+      </a>
+      <a class="contact" href="https://instagram.com/gladio.ik" target="_blank" rel="noopener">
+        <span class="ic">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="1.8"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.1" fill="#F2A93B" stroke="none"/></svg>
+        </span>
+        <span><small>Instagram</small><strong>@gladio.ik</strong></span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>© <span id="yr"></span> gladio.ik — автоматизація, AI-агенти, парсери</span>
+  <span class="mono" style="font-size:13px">Telegram: @ponponobi</span>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* поява при скролі */
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.1});
+document.querySelectorAll('.rv').forEach(function(el,i){ el.style.transitionDelay=(i%3*70)+'ms'; io.observe(el); });
+
+/* живий лог у герої */
+var LINES = [
+  ['inf','agent.start','цикл запущено, джерел: 8'],
+  ['msg','scraper','competitor-a.com — 240 позицій'],
+  ['msg','scraper','competitor-b.com — 187 позицій'],
+  ['wrn','retry','timeout, повтор через 5с'],
+  ['ok','scraper','competitor-b.com — готово'],
+  ['inf','llm','класифікація 63 звернень'],
+  ['ok','crm','створено 12 задач'],
+  ['msg','parser','витягнуто 1 420 рядків'],
+  ['ok','sheets','таблицю оновлено'],
+  ['inf','notify','звіт надіслано в Telegram'],
+  ['ok','agent.done','цикл завершено за 42.6с'],
+  ['msg','scheduler','наступний запуск о 14:00']
+];
+var logEl = document.getElementById('log'), idx = 0;
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function time(){
+  var d = new Date();
+  return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
+}
+function push(){
+  var l = LINES[idx % LINES.length]; idx++;
+  var row = document.createElement('div');
+  row.innerHTML = '<span class="ts">'+time()+'</span> <span class="'+l[0]+'">'+l[1]+'</span> <span class="msg">'+l[2]+'</span>';
+  logEl.appendChild(row);
+  while(logEl.children.length > 11) logEl.removeChild(logEl.firstChild);
+}
+for(var i=0;i<11;i++) push();
+if(!reduced) setInterval(push, 2100);
+
+/* калькулятор */
+var h=document.getElementById('h'), p=document.getElementById('p'), a=document.getElementById('a');
+function nf(n){ return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
+function calc(){
+  var hours = +h.value, price = +p.value, share = +a.value/100;
+  var savedHours = hours * 52 * share;
+  document.getElementById('hv').textContent = hours + ' год';
+  document.getElementById('pv').textContent = nf(price) + ' ₴';
+  document.getElementById('av').textContent = a.value + '%';
+  document.getElementById('money').textContent = nf(savedHours*price) + ' ₴';
+  document.getElementById('hours').textContent = nf(savedHours);
+  document.getElementById('days').textContent = nf(savedHours/8);
+}
+[h,p,a].forEach(function(el){ el.addEventListener('input', calc); });
+calc();
+
+/* бриф */
+var rows = document.querySelectorAll('.brief-row');
+var preview = document.getElementById('preview');
+rows.forEach(function(row){
+  row.querySelectorAll('.opt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var on = btn.getAttribute('aria-pressed')==='true';
+      row.querySelectorAll('.opt').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+      render();
+    });
+  });
+});
+function render(){
+  var parts = [];
+  rows.forEach(function(row){
+    var sel = row.querySelector('.opt[aria-pressed="true"]');
+    if(sel) parts.push(row.dataset.group + ': ' + sel.textContent.trim());
+  });
+  if(!parts.length){ preview.textContent = "Оберіть варіанти вище — тут з'явиться готовий текст."; return; }
+  preview.textContent = 'Вітаю! Пишу з сайту, є задача на автоматизацію.\n\n' + parts.join('\n') +
+    '\n\nЗараз це робиться так: \nПотрібен результат: ';
+}
+document.getElementById('send').addEventListener('click', function(){
+  var text = preview.textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(text).catch(function(){});
+  var c = document.getElementById('copied');
+  c.classList.add('on'); setTimeout(function(){ c.classList.remove('on'); }, 2200);
+  window.open('https://t.me/ponponobi','_blank','noopener');
+});
+</script>
+</body>
+</html>
